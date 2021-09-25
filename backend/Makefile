@@ -1,5 +1,5 @@
 defualt:
-	cd src && flask run
+	FLASK_APP=src/app flask run
 
 deps-freeze:
 	pip freeze > requirements.txt

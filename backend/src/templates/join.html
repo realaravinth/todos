@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+
+  <h1>Login</h1>
+  {% if error %}
+    <p>error</p>
+  {% endif %}
+  <form action="/join" method="post">
+    <label for="username">
+      Username
+      <input type="text" name="username" id="username">
+    </label>
+    <label for="password">
+      Password
+      <input type="password" name="password" id="password">
+    </label>
+   <label for="confirm_password">
+      Confirm Password
+      <input type="password" name="confirm_password" id="confirm_password">
+    </label>
+    <button type="submit">Login</button>
+
+  </form>
+  <p>Already have an account? <a href="/login" >Log in</a></p>
+  
+</body>
+</html>
