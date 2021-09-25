@@ -1,7 +1,49 @@
-<!doctype html>
-<title>Hello from Flask</title>
-{% if name %}
-  <h1>Hello {{ name }}!</h1>
-{% else %}
-  <h1>Hello, World!</h1>
-{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | todo</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/logout">logout</a></li>
+      </ul>
+    </nav>
+    <form action="/" method="POST" accept-charset="utf-8">
+      <label for="task">
+        Task
+        <input type="text" name="task" id="task" />
+      </label>
+      <button type="submit">Add</button>
+    </form>
+    {% if tasks %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ task[1] }}</td>
+          {% if task[2] == 0 %}
+          <td>Pending</td>
+          <td><a href="/task/{{ task[0] }}/done">Mark Done</a></td>
+          {% else %}
+          <td>Done</td>
+          <td><a href="/task/{{ task[0] }}/pending">Mark Pending</a></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>Looks like you don't have any tasks</p>
+    {% endif %}
+  </body>
+</html>
