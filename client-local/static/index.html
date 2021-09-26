@@ -6,16 +6,23 @@
     <title>Home | todo</title>
   </head>
   <body>
-    <form action="/" method="POST" id='form' accept-charset="utf-8">
+    <button id="export" type="submit">Export Tasks</button>
+    <form action="" method="get">
+      <label for="file"
+        >Import Tasks
+        <input type="file" id="file"/>
+      </label>
+      <button id="import" type="submit">Import Tasks</button>
+    </form>
+
+    <form action="/" method="POST" id="form" accept-charset="utf-8">
       <label for="task">
         Task
         <input type="text" name="task" id="task" />
       </label>
-      <button id='submit' type="submit">Add</button>
+      <button id="submit" type="submit">Add</button>
     </form>
-    <div id='app'>
-      
-    </div>
-
+    <div id="app"></div>
   </body>
+  <script src="/index.js"></script>
 </html>

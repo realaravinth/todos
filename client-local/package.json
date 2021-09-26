@@ -1,13 +1,13 @@
 {
-  "name": "WSoC2103-TestRepo",
+  "name": "client-local",
   "version": "1.0.0",
-  "description": "tests for acceptance into dev team for identity",
+  "description": "client-local implements of simple tasks app",
   "main": "index.js",
-  "repository": "git@github.com:WSoC-VITAP/WSoC2103-TestRepo.git",
+  "repository": "git@github.com:realaravinth/todos.git",
   "author": "realaravinth <realaravinth@batsense.net>",
   "license": "AGPLv3",
   "scripts": {
-    "test": "yarn jest"
+    "build": "tsc -p tsconfig.json && cp static/* dist/"
   },
   "private": true,
   "devDependencies": {
