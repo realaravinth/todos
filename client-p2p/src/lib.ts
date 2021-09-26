@@ -93,7 +93,7 @@ export class App {
     const reader = new FileReader();
     reader.readAsText(file, "UTF-8");
     const app: App = this;
-    reader.onload = async function (this, evt) {
+    reader.onload = async function (evt) {
       const contents = <string>evt.target?.result;
       const tasks: Array<Task> = JSON.parse(contents);
       await app.storage.restore(tasks);
