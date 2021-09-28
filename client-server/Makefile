@@ -1,8 +1,8 @@
 defualt:
-	FLASK_APP=src/app FLASK_ENV=development flask run
+	@source ./venv/bin/activate && FLASK_APP=src/app FLASK_ENV=development flask run
 
 deps-freeze:
-	pip freeze > requirements.txt
+	@source ./venv/bin/activate && pip freeze > requirements.txt
 
 deps-install:
 	pip install -r requirements.txt

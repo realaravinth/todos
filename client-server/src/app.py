@@ -40,8 +40,6 @@ app.secret_key = bytes(os.getenv('TODO_SECRET'), 'utf-8')
 app.logger.setLevel(logging.DEBUG)
 bcrypt = Bcrypt(app)
 
-init_db()
-
 def add_task(task: str, username: str):
     conn = get_db()
     cur = conn.cursor()
