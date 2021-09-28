@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Publish webpages
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: ⚡ Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./client-p2p/node_modules
+            ./client-local/node_modules
+          key: ${{ runner.os }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - name: build client-local and client-p2p
+        run: make ci
+
+      - name: Deploy to GitHub Pages
+        if: matrix.version == 'stable' && (github.repository == 'realaravinth/todos')
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
