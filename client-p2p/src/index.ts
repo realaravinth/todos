@@ -39,19 +39,27 @@ class TaskThread implements TaskStorage {
     let threadIDPersisted = localStorage.getItem(this.THREAD_ITEM);
     if (threadIDPersisted === null) {
       const client = await this.id.getClient();
-      const resp = await client.getThread(this.threadName);
-      console.log(`thread details: ${resp.id} ${resp.name}`);
-      this.threadID = ThreadID.fromString(resp.id);
-      const availableCollections = await client.listCollections(this.threadID);
-      if (
-        availableCollections.find(
-          (col) => col.name === this.thread_collection_name
-        )
-      ) {
-        document.body.dispatchEvent(RenderEvent);
-        this._initLock = false;
+      try {
+        const resp = await client.getThread(this.threadName);
+        console.log(`thread details: ${resp.id} ${resp.name}`);
+        this.threadID = ThreadID.fromString(resp.id);
+        const availableCollections = await client.listCollections(
+          this.threadID
+        );
+        if (
+          availableCollections.find(
+            (col) => col.name === this.thread_collection_name
+          )
+        ) {
+          document.body.dispatchEvent(RenderEvent);
+          this._initLock = false;
 
-        return;
+          return;
+        }
+      } catch (e) {
+        console.log(
+          `no existing thread, creating new thread. Thread lookup error : ${e}`
+        );
       }
 
       const tasks = {
