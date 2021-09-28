@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export const EVENT_NAME = "re-render-page";
+export const RenderEvent = new Event(EVENT_NAME);
+
 export type Task = {
   id: number;
   // true = task is pending
@@ -36,9 +39,7 @@ export class App {
   app: HTMLElement;
   form: HTMLFormElement;
   task: HTMLInputElement;
-  exportBtn: HTMLButtonElement;
-  importBtn: HTMLButtonElement;
-  importFile: HTMLInputElement;
+  renderEvent: Event;
 
   constructor(storage: TaskStorage) {
     this.storage = storage;
@@ -48,20 +49,10 @@ export class App {
       "submit",
       async (e: Event) => await this.addTask(e)
     );
-    this.importFile = <HTMLInputElement>document.getElementById("file");
     this.task = <HTMLInputElement>document.getElementById("task");
-    this.exportBtn = <HTMLButtonElement>document.getElementById("export");
-    this.importBtn = <HTMLButtonElement>document.getElementById("import");
-    this.importBtn.addEventListener(
-      "click",
-      async (e: Event) => await this.importTasks(e)
-    );
-
-    this.exportBtn.addEventListener(
-      "click",
-      async (e: Event) => await this.exportTasks(e)
-    );
-    this.render();
+    this.renderEvent = document.createEvent('Event')
+    document.body.addEventListener(EVENT_NAME, async () => await this.render())
+    document.body.dispatchEvent(RenderEvent)
   }
 
   async addTask(e: Event) {
@@ -70,38 +61,6 @@ export class App {
     await this.storage.addTask(name);
     await this.render();
     this.task.value = "";
-  }
-
-  async exportTasks(e: Event) {
-    e.preventDefault();
-    const tasks = await this.storage.getTasks();
-    if (tasks === null) {
-      alert("No items to export");
-    } else {
-      const data = JSON.stringify(tasks, undefined, 2);
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([data], { type: "text/json" }));
-      a.download = "tasks.json";
-      a.click();
-    }
-  }
-
-  async importTasks(e: Event) {
-    e.preventDefault();
-    const files = <FileList>this.importFile.files;
-    const file = files[0];
-    const reader = new FileReader();
-    reader.readAsText(file, "UTF-8");
-    const app: App = this;
-    reader.onload = async function (evt) {
-      const contents = <string>evt.target?.result;
-      const tasks: Array<Task> = JSON.parse(contents);
-      await app.storage.restore(tasks);
-      await app.render();
-    };
-    reader.onerror = function (_evt) {
-      alert("error reading file");
-    };
   }
 
   async render() {

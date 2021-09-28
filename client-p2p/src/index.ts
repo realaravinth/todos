@@ -16,13 +16,13 @@
  */
 import { ThreadID, Where } from "@textile/hub";
 import AppIdentity from "./identity";
-import { Task, TaskStorage, App } from "./lib";
+import { Task, TaskStorage, App, RenderEvent } from "./lib";
 
 class TaskThread implements TaskStorage {
   //implements TaskStorage {
   THREAD_ITEM = "tasks_thread_id";
   thread_collection_name = "todo-tasks-v2";
-  thread_id = "tasks-thread-v1";
+  threadName = "tasks-thread-v1";
   _initLock = false;
 
   threadID: ThreadID | null = null;
@@ -39,6 +39,21 @@ class TaskThread implements TaskStorage {
     let threadIDPersisted = localStorage.getItem(this.THREAD_ITEM);
     if (threadIDPersisted === null) {
       const client = await this.id.getClient();
+      const resp = await client.getThread(this.threadName);
+      console.log(`thread details: ${resp.id} ${resp.name}`);
+      this.threadID = ThreadID.fromString(resp.id);
+      const availableCollections = await client.listCollections(this.threadID);
+      if (
+        availableCollections.find(
+          (col) => col.name === this.thread_collection_name
+        )
+      ) {
+        document.body.dispatchEvent(RenderEvent);
+        this._initLock = false;
+
+        return;
+      }
+
       const tasks = {
         title: "Tasks_v3",
         type: "object",
@@ -65,7 +80,7 @@ class TaskThread implements TaskStorage {
       };
 
       const _create_thread = async () => {
-        let threadId = await client.newDB(undefined, this.thread_id);
+        let threadId = await client.newDB(undefined, this.threadName);
         localStorage.removeItem(this.THREAD_ITEM);
         localStorage.setItem(this.THREAD_ITEM, threadId.toString());
         this.threadID = threadId;

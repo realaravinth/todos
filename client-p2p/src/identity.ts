@@ -28,22 +28,68 @@ class AppIdentity {
   client: Client | null = null;
   token: string | null = null;
 
-  constructor() {
-    let private_key = localStorage.getItem(this.PRIVATE_KEY_ITEM);
-    if (private_key === null) {
-      let new_private_key = PrivateKey.fromRandom();
-      localStorage.removeItem(this.PRIVATE_KEY_ITEM);
-      localStorage.setItem(this.PRIVATE_KEY_ITEM, new_private_key.toString());
-      this.private_key = new_private_key;
-    } else {
-      this.private_key = PrivateKey.fromString(private_key);
-    }
+  exportBtn: HTMLButtonElement;
+  importBtn: HTMLButtonElement;
+  importKey: HTMLInputElement;
 
+  constructor(i_private_key?: string) {
+    this.exportBtn = <HTMLButtonElement>document.getElementById("export");
+    this.importBtn = <HTMLButtonElement>document.getElementById("import");
+    this.importKey = <HTMLInputElement>document.getElementById("private-key");
+    this.importBtn.addEventListener(
+      "click",
+      async (e: Event) => await this.importTasks(e)
+    );
+
+    this.exportBtn.addEventListener(
+      "click",
+      async (e: Event) => await this.exportTasks(e)
+    );
+
+    if (i_private_key === undefined) {
+      let private_key = localStorage.getItem(this.PRIVATE_KEY_ITEM);
+      if (private_key === null) {
+        let new_private_key = PrivateKey.fromRandom();
+        localStorage.removeItem(this.PRIVATE_KEY_ITEM);
+        localStorage.setItem(this.PRIVATE_KEY_ITEM, new_private_key.toString());
+        this.private_key = new_private_key;
+      } else {
+        this.private_key = PrivateKey.fromString(private_key);
+      }
+    } else {
+      this.private_key = PrivateKey.fromString(i_private_key);
+    }
     this.public_key = this.private_key.public;
     localStorage.removeItem(this.PUBLIC_KEY_ITEM);
     localStorage.setItem(this.PUBLIC_KEY_ITEM, this.public_key.toString());
     console.log(`public key: ${this.public_key.toString()}`);
     this.authorize();
+  }
+
+  async importTasks(e: Event) {
+    e.preventDefault();
+    let key = this.importKey.value;
+    await this.setPrivateKey(key);
+    this.importKey.value = "";
+    window.location.reload();
+  }
+
+  async exportTasks(e: Event) {
+    e.preventDefault();
+    const field = <HTMLDivElement>document.getElementById("pkey");
+    field.innerText = this.private_key.toString();
+  }
+
+  async setPrivateKey(private_key: string) {
+    this.private_key = PrivateKey.fromString(private_key);
+    this.public_key = this.private_key.public;
+    localStorage.removeItem(this.PUBLIC_KEY_ITEM);
+    localStorage.setItem(this.PUBLIC_KEY_ITEM, this.public_key.toString());
+
+    localStorage.removeItem(this.PRIVATE_KEY_ITEM);
+    localStorage.setItem(this.PRIVATE_KEY_ITEM, this.private_key.toString());
+
+    await this.authorize();
   }
 
   async authorize() {
